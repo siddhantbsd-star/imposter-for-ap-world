@@ -5,50 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AP World: Heimler Edition</title>
     <style>
-        :root { --bg: #0d1117; --panel: #161b22; --text: #c9d1d9; --red: #ff4444; --green: #2ea043; --blue: #58a6ff; --border: #30363d; }
+        :root { 
+            --bg: #000000; 
+            --panel: #1c1c1e; 
+            --text: #f2f2f7; 
+            --text-muted: #8e8e93;
+            --red: #ff453a; 
+            --red-grad: linear-gradient(135deg, #ff453a, #ff6961);
+            --green: #32d74b; 
+            --green-grad: linear-gradient(135deg, #32d74b, #30db5b);
+            --blue: #0a84ff; 
+            --blue-grad: linear-gradient(135deg, #0a84ff, #64d2ff);
+            --border: #38383a; 
+            --card-bg: #2c2c2e;
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        #app { width: 100%; max-width: 480px; background: var(--panel); border-radius: 24px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-        .screen { display: none; flex-direction: column; gap: 15px; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh;
+            align-items: center;
+        }
+        #app { 
+            width: 100%; 
+            max-width: 450px; 
+            background: var(--panel); 
+            border-radius: 28px; 
+            padding: 30px 25px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8); 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Smooth Fade Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen { display: none; flex-direction: column; gap: 18px; animation: fadeIn 0.4s ease forwards; }
         .active { display: flex; }
-        h1 { margin: 0; font-size: 1.6rem; color: white; text-transform: uppercase; text-align: center; }
-        .subtitle { color: #8b949e; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.2px; text-align: center; }
-        .left-label { color: #8b949e; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; }
-        input, select { background: var(--bg); border: 2px solid var(--border); color: white; padding: 15px; border-radius: 14px; width: 100%; font-size: 1rem; }
-        button { background: var(--blue); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
-        button:active:not(:disabled) { transform: scale(0.98); opacity: 0.8; }
-        button:disabled { cursor: not-allowed; }
-        .btn-success { background: var(--green); }
-        .btn-danger { background: var(--red); }
-        .btn-sec { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .card { background: var(--bg); border: 2px dashed var(--border); padding: 30px; border-radius: 20px; text-align: center; }
-        .vote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #setup-fields { max-height: 200px; overflow-y: auto; margin: 10px 0; border: 1px solid var(--border); border-radius: 10px; padding: 5px; }
-        .player-row { display: flex; gap: 5px; margin-bottom: 5px; }
-        .btn-del { background: #21262d; color: var(--red); width: 45px; border: 1px solid var(--border); padding: 0; border-radius: 10px; }
+        
+        h1 { margin: 0; font-size: 1.8rem; color: white; text-align: center; font-weight: 800; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; font-weight: 600; margin: 0; }
+        .left-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; font-weight: 600; }
+        
+        input, select { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            color: white; 
+            padding: 16px; 
+            border-radius: 16px; 
+            width: 100%; 
+            font-size: 1.05rem; 
+            outline: none;
+            transition: 0.2s;
+            appearance: none;
+        }
+        input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3); }
+        
+        button { 
+            background: var(--blue-grad); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 18px; 
+            font-size: 1.05rem;
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.15s ease; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:active:not(:disabled) { transform: scale(0.96); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        button:disabled { cursor: not-allowed; opacity: 0.5; }
+        
+        .btn-success { background: var(--green-grad); }
+        .btn-danger { background: var(--red-grad); }
+        .btn-sec { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); box-shadow: none; }
+        
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            padding: 35px 20px; 
+            border-radius: 22px; 
+            text-align: center; 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+        .vote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        #setup-fields { 
+            max-height: 220px; 
+            overflow-y: auto; 
+            margin: 5px 0; 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        /* Custom Scrollbar */
+        #setup-fields::-webkit-scrollbar { width: 6px; }
+        #setup-fields::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        .player-row { display: flex; gap: 10px; }
+        .btn-del { 
+            background: rgba(255, 69, 58, 0.1); 
+            color: var(--red); 
+            width: 55px; 
+            border: 1px solid rgba(255, 69, 58, 0.3); 
+            padding: 0; 
+            border-radius: 16px; 
+            font-size: 1.5rem;
+            box-shadow: none;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            align-self: center;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="setup" class="screen active">
-        <h1>AP WORLD: BALL KNOWLEDGE</h1>
-        <p class="subtitle">Heimler Core Vocabulary</p>
+        <h1>AP WORLD: IMPOSTER</h1>
+        <p class="subtitle">CED Core Vocabulary</p>
         
         <select id="unit-select">
-            <option value="all">Full Exam Review (1-9)</option>
-            <option value="1">Unit 1: Global Tapestry</option>
-            <option value="2">Unit 2: Exchange Networks</option>
+            <option value="all">Full Exam Review (Units 1-9)</option>
+            <option value="1">Unit 1: The Global Tapestry</option>
+            <option value="2">Unit 2: Networks of Exchange</option>
             <option value="3">Unit 3: Land Empires</option>
             <option value="4">Unit 4: Transoceanic Interconnections</option>
             <option value="5">Unit 5: Revolutions</option>
-            <option value="6">Unit 6: Imperialism</option>
+            <option value="6">Unit 6: Consequences of Industrialization</option>
             <option value="7">Unit 7: Global Conflict</option>
             <option value="8">Unit 8: Cold War & Decolonization</option>
             <option value="9">Unit 9: Globalization</option>
         </select>
 
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 15px;">
             <div style="flex:1">
                 <label class="left-label">Min Moles</label>
                 <input type="number" id="imp-min" value="1" min="1">
@@ -60,137 +169,153 @@
         </div>
 
         <div id="setup-fields"></div>
-        <button class="btn-sec" onclick="addField()">+ Add Player</button>
-        <button class="btn-success" onclick="initGame()">Start Round</button>
+        <button class="btn-sec" onclick="addField()">+ Add Analyst</button>
+        <button class="btn-success" onclick="initGame()">Commence Briefing</button>
     </div>
 
     <div id="pass" class="screen">
-        <p class="subtitle">Hand Device To:</p>
-        <h1 id="pass-name" style="color: var(--blue); font-size: 2.5rem;"></h1>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; padding: 40px 0;">
+            <p class="subtitle">Classified Intel For:</p>
+            <h1 id="pass-name" style="color: var(--blue); font-size: 2.8rem;"></h1>
+            <p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">Ensure no other agents are looking at your screen.</p>
+        </div>
         <button onclick="revealRole()">View My Intel</button>
     </div>
 
     <div id="secret" class="screen">
-        <div id="role-card" class="card"></div>
+        <div id="role-card" class="card" style="min-height: 250px;"></div>
         <button class="btn-sec" onclick="nextSecret()">Intel Secured</button>
     </div>
 
     <div id="debate" class="screen">
-        <div id="round-tag" style="background:#1f2428; padding:5px 10px; border-radius:8px; font-size:0.7rem; align-self:center; font-weight:bold;">ROUND 1</div>
-        <p class="subtitle">Currently Speaking:</p>
-        <h1 id="speaker-name" style="color: var(--blue);"></h1>
-        <div class="card">Describe the concept without saying its name.</div>
+        <div class="badge" id="round-tag">ROUND 1</div>
+        <div style="text-align: center; margin: 10px 0;">
+            <p class="subtitle">Currently Speaking</p>
+            <h1 id="speaker-name" style="color: var(--blue); font-size: 2.5rem; margin-top: 5px;"></h1>
+        </div>
+        <div class="card" style="padding: 20px;">
+            <p style="margin:0; font-weight: 500; line-height: 1.5;">Describe the historical concept without saying any part of its name.</p>
+        </div>
         <button onclick="nextSpeaker()">End My Turn</button>
-        <button id="vote-btn" class="btn-danger" onclick="showVoting()" style="margin-top:15px;">Call Ejection Vote</button>
+        <button id="vote-btn" class="btn-danger" onclick="showVoting()" style="margin-top:10px;">Call Ejection Vote</button>
         
-        <button class="btn-sec" onclick="reset()" style="margin-top:20px; font-size: 0.7rem; opacity:0.6; padding: 10px;">Emergency Reset</button>
+        <button class="btn-sec" onclick="reset()" style="margin-top:15px; font-size: 0.8rem; padding: 12px; border: none; background: transparent; color: var(--text-muted);">⚠ Emergency Reset</button>
     </div>
 
     <div id="voting" class="screen">
-        <h1>VOTING</h1>
-        <p class="subtitle">Who is the Mole?</p>
-        <div id="vote-list" class="vote-grid"></div>
-        <button class="btn-sec" onclick="showScreen('debate')">Back to Debate</button>
+        <h1>EJECTION PROTOCOL</h1>
+        <p class="subtitle">Select Suspected Mole</p>
+        <div id="vote-list" class="vote-grid" style="margin-top: 10px;"></div>
+        <button class="btn-sec" onclick="showScreen('debate')" style="margin-top: 20px;">Cancel Vote</button>
     </div>
 
     <div id="result" class="screen">
-        <h1 id="res-header">RESULTS</h1>
-        <div class="card">
-            <h2 id="res-name"></h2>
-            <div id="res-status" style="font-weight:900; font-size: 1.5rem; margin:10px 0;"></div>
-            <p id="res-desc" style="color: #8b949e;"></p>
+        <h1 id="res-header">TRIBUNAL RESULTS</h1>
+        <div class="card" style="margin: 20px 0;">
+            <h2 id="res-name" style="margin: 0; font-size: 2rem;"></h2>
+            <div id="res-status" style="font-weight:900; font-size: 1.8rem; margin:10px 0;"></div>
+            <p id="res-desc" style="color: var(--text-muted); margin: 0; line-height: 1.4;"></p>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
             <button id="btn-keep-going" class="btn-sec" onclick="keepGoing()">Continue Investigation</button>
             <button id="btn-next-round" class="btn-success" onclick="initGame()">Next Keyword</button>
-            <button class="btn-sec" onclick="reset()" style="font-size:0.7rem; opacity:0.6;">Quit to Menu</button>
+            <button class="btn-sec" onclick="reset()" style="font-size:0.85rem; border: none; background: transparent; color: var(--text-muted);">Quit to Menu</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Essential AP World "Ball Knowledge" Concepts (Heimler Focus)
+    // 200 Highly-Tested AP World History CED Terms
     const CED_DB = {
         "1": [
-            {t:"Song Dynasty", h:"Meritocracy"}, {t:"Confucianism", h:"Filial"}, {t:"Champa Rice", h:"Yield"}, 
-            {t:"Dar al-Islam", h:"Expansion"}, {t:"House of Wisdom", h:"Translation"}, {t:"Mali Empire", h:"Gold"}, 
-            {t:"Mansa Musa", h:"Hajj"}, {t:"Inca Empire", h:"Roads"}, {t:"Mit'a System", h:"Compulsory"}, 
-            {t:"Aztec Empire", h:"Tribute"}, {t:"Feudalism", h:"Decentralized"}, {t:"Serfdom", h:"Coerced"}, 
-            {t:"Great Zimbabwe", h:"Enclosure"}, {t:"Bhakti Movement", h:"Devotion"}, {t:"Sufism", h:"Mystic"}, 
-            {t:"Theravada Buddhism", h:"Monastic"}, {t:"Grand Canal", h:"Internal"}, {t:"Seljuk Empire", h:"Turks"}, 
-            {t:"Delhi Sultanate", h:"Jizya"}, {t:"Civil Service Exam", h:"Scholars"}
+            {t:"Song Dynasty", h:"Merit"}, {t:"Filial Piety", h:"Respect"}, {t:"Grand Canal", h:"Waterway"}, 
+            {t:"Neo-Confucianism", h:"Syncretic"}, {t:"Champa Rice", h:"Drought"}, {t:"Dar al-Islam", h:"House"}, 
+            {t:"House of Wisdom", h:"Baghdad"}, {t:"Seljuk Empire", h:"Turks"}, {t:"Delhi Sultanate", h:"India"}, 
+            {t:"Abbasid Caliphate", h:"Golden"}, {t:"Sufism", h:"Mystics"}, {t:"Srivijaya Empire", h:"Strait"}, 
+            {t:"Khmer Empire", h:"Angkor"}, {t:"Mali Empire", h:"Sundiata"}, {t:"Mansa Musa", h:"Gold"}, 
+            {t:"Mississippian Culture", h:"Mounds"}, {t:"Inca Empire", h:"Andes"}, {t:"Mit'a System", h:"Labor"}, 
+            {t:"Aztec Empire", h:"Tenochtitlan"}, {t:"Tribute System", h:"Payment"}, {t:"Feudalism", h:"Decentralized"}, 
+            {t:"Serfdom", h:"Tied"}
         ],
         "2": [
-            {t:"Silk Roads", h:"Luxury"}, {t:"Caravanserai", h:"Inn"}, {t:"Mongol Empire", h:"Horde"}, 
-            {t:"Pax Mongolica", h:"Security"}, {t:"Indian Ocean Trade", h:"Monsoon"}, {t:"Lateen Sail", h:"Wind"}, 
-            {t:"Astrolabe", h:"Navigation"}, {t:"Trans-Saharan Trade", h:"Camel"}, {t:"Zheng He", h:"Treasure"}, 
-            {t:"Ibn Battuta", h:"Rihla"}, {t:"Marco Polo", h:"Court"}, {t:"Black Death", h:"Pathogen"}, 
-            {t:"Swahili City-States", h:"Diaspora"}, {t:"Paper Money", h:"Currency"}, {t:"Magnetic Compass", h:"Direction"}, 
-            {t:"Kashgar", h:"Oasis"}, {t:"Sternpost Rudder", h:"Shipbuilding"}, {t:"Hanseatic League", h:"Guild"}, 
-            {t:"Genghis Khan", h:"Unification"}, {t:"Saddle", h:"Riding"}
+            {t:"Silk Roads", h:"Luxury"}, {t:"Kashgar", h:"Oasis"}, {t:"Samarkand", h:"Mosque"}, 
+            {t:"Caravanserai", h:"Inn"}, {t:"Paper Money", h:"Flying"}, {t:"Pax Mongolica", h:"Peace"}, 
+            {t:"Genghis Khan", h:"Bow"}, {t:"Yuan Dynasty", h:"Kublai"}, {t:"Indian Ocean Trade", h:"Maritime"}, 
+            {t:"Monsoon Winds", h:"Seasonal"}, {t:"Astrolabe", h:"Stars"}, {t:"Lateen Sail", h:"Triangle"}, 
+            {t:"Swahili City-States", h:"East"}, {t:"Zheng He", h:"Treasure"}, {t:"Trans-Saharan Trade", h:"Sand"}, 
+            {t:"Camel Saddle", h:"Hump"}, {t:"Ibn Battuta", h:"Traveler"}, {t:"Marco Polo", h:"Venice"}, 
+            {t:"Bubonic Plague", h:"Fleas"}, {t:"Gunpowder", h:"Explosive"}, {t:"Magnetic Compass", h:"North"}, 
+            {t:"Diasporic Communities", h:"Merchant"}
         ],
         "3": [
-            {t:"Gunpowder Empires", h:"Cannons"}, {t:"Ottoman Empire", h:"Constantinople"}, {t:"Devshirme", h:"Tribute"}, 
-            {t:"Janissaries", h:"Elite"}, {t:"Safavid Empire", h:"Shi'a"}, {t:"Mughal Empire", h:"Taj"}, 
-            {t:"Divine Right", h:"Absolutism"}, {t:"Versailles", h:"Legitimacy"}, {t:"Tokugawa Shogunate", h:"Isolation"}, 
-            {t:"Samurai", h:"Salaried"}, {t:"Qing Dynasty", h:"Manchu"}, {t:"Protestant Reformation", h:"Indulgences"}, 
-            {t:"Catholic Counter-Reformation", h:"Jesuits"}, {t:"Sikhism", h:"Syncretic"}, {t:"Tax Farming", h:"Revenue"}, 
-            {t:"Tribute System", h:"Submission"}, {t:"Peter the Great", h:"Westernization"}, {t:"Sunni-Shi'a Split", h:"Rivalry"}, 
-            {t:"Bureaucracy", h:"Administration"}, {t:"Monumental Architecture", h:"Power"}
+            {t:"Gunpowder Empires", h:"Cannons"}, {t:"Ottoman Empire", h:"Anatolia"}, {t:"Suleiman the Magnificent", h:"Lawgiver"}, 
+            {t:"Devshirme", h:"Boys"}, {t:"Janissaries", h:"Elite"}, {t:"Safavid Empire", h:"Shi'a"}, 
+            {t:"Mughal Empire", h:"India"}, {t:"Akbar the Great", h:"Tolerant"}, {t:"Qing Dynasty", h:"Manchu"}, 
+            {t:"Tokugawa Shogunate", h:"Edo"}, {t:"Samurai", h:"Swords"}, {t:"Divine Right", h:"God"}, 
+            {t:"Versailles", h:"Palace"}, {t:"Taj Mahal", h:"Tomb"}, {t:"Tax Farming", h:"Collection"}, 
+            {t:"Protestant Reformation", h:"Theses"}, {t:"Martin Luther", h:"Indulgences"}, {t:"Catholic Counter-Reformation", h:"Trent"}, 
+            {t:"Jesuits", h:"Society"}, {t:"Sikhism", h:"Punjab"}, {t:"Sunni-Shi'a Split", h:"Succession"}, 
+            {t:"Boyars", h:"Nobles"}
         ],
         "4": [
-            {t:"Columbian Exchange", h:"Biota"}, {t:"Mercantilism", h:"Exports"}, {t:"Joint-Stock Company", h:"Investment"}, 
-            {t:"Trading Post Empire", h:"Dutch"}, {t:"Encomienda System", h:"Labor"}, {t:"Hacienda System", h:"Agriculture"}, 
-            {t:"Chattel Slavery", h:"Property"}, {t:"Middle Passage", h:"Voyage"}, {t:"Casta System", h:"Hierarchy"}, 
-            {t:"Silver Trade", h:"Inflation"}, {t:"Smallpox", h:"Demographic"}, {t:"Sugar Plantations", h:"Cash"}, 
-            {t:"Maritime Empires", h:"Oceanic"}, {t:"Fluyt", h:"Cargo"}, {t:"Vasco da Gama", h:"Route"}, 
-            {t:"Christopher Columbus", h:"Sponsorship"}, {t:"Maroon Societies", h:"Resistance"}, {t:"Vodun", h:"Syncretism"}, 
-            {t:"Creoles", h:"American"}, {t:"Treaty of Tordesillas", h:"Line"}
+            {t:"Caravel", h:"Ship"}, {t:"Fluyt", h:"Dutch"}, {t:"Carrack", h:"Portugal"}, 
+            {t:"Columbian Exchange", h:"Transfer"}, {t:"Mercantilism", h:"Wealth"}, {t:"Joint-Stock Company", h:"Shares"}, 
+            {t:"Trading-Post Empire", h:"Coasts"}, {t:"Encomienda System", h:"Grant"}, {t:"Hacienda System", h:"Estate"}, 
+            {t:"Chattel Slavery", h:"Property"}, {t:"Middle Passage", h:"Voyage"}, {t:"Casta System", h:"Blood"}, 
+            {t:"Peninsulares", h:"Iberian"}, {t:"Creoles", h:"Born"}, {t:"Mestizo", h:"Mixed"}, 
+            {t:"Silver Trade", h:"Potosi"}, {t:"Sugar Plantations", h:"Sweet"}, {t:"Vodun", h:"Spirits"}, 
+            {t:"Maroon Societies", h:"Runaways"}, {t:"Tokugawa Isolation", h:"Closed"}, {t:"East India Company", h:"Monopoly"}, 
+            {t:"Omani-European Rivalry", h:"Conflict"}, {t:"Treaty of Tordesillas", h:"Line"}
         ],
         "5": [
-            {t:"Enlightenment", h:"Reason"}, {t:"Natural Rights", h:"Locke"}, {t:"Social Contract", h:"Agreement"}, 
-            {t:"Nationalism", h:"Identity"}, {t:"American Revolution", h:"Taxation"}, {t:"French Revolution", h:"Estates"}, 
-            {t:"Haitian Revolution", h:"Rebellion"}, {t:"Industrial Revolution", h:"Mechanization"}, {t:"Factory System", h:"Specialization"}, 
-            {t:"Steam Engine", h:"Coal"}, {t:"Meiji Restoration", h:"Modernization"}, {t:"Capitalism", h:"Free"}, 
-            {t:"Adam Smith", h:"Wealth"}, {t:"Karl Marx", h:"Proletariat"}, {t:"Socialism", h:"Means"}, 
-            {t:"Labor Unions", h:"Collective"}, {t:"Seneca Falls Convention", h:"Suffrage"}, {t:"Taiping Rebellion", h:"Uprising"}, 
-            {t:"Simon Bolivar", h:"Jamaica"}, {t:"Urbanization", h:"Migration"}
+            {t:"The Enlightenment", h:"Reason"}, {t:"John Locke", h:"Rights"}, {t:"Social Contract", h:"Agreement"}, 
+            {t:"Nationalism", h:"Identity"}, {t:"American Revolution", h:"Tea"}, {t:"French Revolution", h:"Bastille"}, 
+            {t:"Declaration of Rights of Man", h:"Document"}, {t:"Haitian Revolution", h:"Toussaint"}, {t:"Simon Bolivar", h:"Jamaica"}, 
+            {t:"Industrial Revolution", h:"Factories"}, {t:"Steam Engine", h:"Watt"}, {t:"Factory System", h:"Division"}, 
+            {t:"Fossil Fuels", h:"Coal"}, {t:"Meiji Restoration", h:"Emperor"}, {t:"Adam Smith", h:"Invisible"}, 
+            {t:"Capitalism", h:"Laissez-faire"}, {t:"Karl Marx", h:"Manifesto"}, {t:"Socialism", h:"Proletariat"}, 
+            {t:"Labor Unions", h:"Strike"}, {t:"Seneca Falls Convention", h:"Women"}, {t:"Taiping Rebellion", h:"Heavenly"}, 
+            {t:"Tanzimat Reforms", h:"Ottoman"}
         ],
         "6": [
-            {t:"Imperialism", h:"Domination"}, {t:"Social Darwinism", h:"Justification"}, {t:"Scramble for Africa", h:"Partition"}, 
-            {t:"Berlin Conference", h:"Borders"}, {t:"Settler Colony", h:"Displacement"}, {t:"Economic Imperialism", h:"Influence"}, 
-            {t:"Export Economy", h:"Raw"}, {t:"Opium Wars", h:"Spheres"}, {t:"Sepoy Mutiny", h:"Cartridges"}, 
-            {t:"King Leopold II", h:"Rubber"}, {t:"Suez Canal", h:"Chokepoint"}, {t:"Monroe Doctrine", h:"Hemisphere"}, 
-            {t:"Indentured Servitude", h:"Contracts"}, {t:"Chinese Exclusion Act", h:"Nativism"}, {t:"White Australia Policy", h:"Restriction"}, 
-            {t:"Ghost Dance", h:"Revitalization"}, {t:"Xhosa Cattle-Killing", h:"Prophecy"}, {t:"Banana Republics", h:"Corporations"}, 
-            {t:"Civilizing Mission", h:"Burden"}, {t:"Cecil Rhodes", h:"Diamonds"}
+            {t:"Imperialism", h:"Empire"}, {t:"Social Darwinism", h:"Fittest"}, {t:"Civilizing Mission", h:"Burden"}, 
+            {t:"Scramble for Africa", h:"Berlin"}, {t:"King Leopold II", h:"Congo"}, {t:"Settler Colony", h:"Move"}, 
+            {t:"Sepoy Mutiny", h:"Cartridge"}, {t:"Export Economy", h:"Raw"}, {t:"Economic Imperialism", h:"Profit"}, 
+            {t:"Opium Wars", h:"Treaty"}, {t:"Spheres of Influence", h:"Chunks"}, {t:"Boxer Rebellion", h:"Fists"}, 
+            {t:"Cherokee Nation", h:"Tears"}, {t:"Ghost Dance", h:"Shirts"}, {t:"Xhosa Cattle-Killing", h:"Spirits"}, 
+            {t:"Mahdist War", h:"Sudan"}, {t:"Monroe Doctrine", h:"Hemisphere"}, {t:"Manifest Destiny", h:"West"}, 
+            {t:"Indentured Servitude", h:"Contract"}, {t:"Chinese Exclusion Act", h:"Ban"}, {t:"White Australia Policy", h:"Race"}, 
+            {t:"Ethnic Enclaves", h:"Neighborhoods"}
         ],
         "7": [
-            {t:"Total War", h:"Mobilization"}, {t:"Trench Warfare", h:"Stalemate"}, {t:"Treaty of Versailles", h:"Reparations"}, 
-            {t:"League of Nations", h:"Collective"}, {t:"Great Depression", h:"Crash"}, {t:"Fascism", h:"Authoritarian"}, 
-            {t:"Totalitarianism", h:"Control"}, {t:"Russian Revolution", h:"Bolsheviks"}, {t:"Joseph Stalin", h:"Five-Year"}, 
-            {t:"Holocaust", h:"Genocide"}, {t:"World War II", h:"Aggression"}, {t:"Atomic Bomb", h:"Devastation"}, 
-            {t:"Propaganda", h:"Media"}, {t:"Armenian Genocide", h:"Deportation"}, {t:"Appeasement", h:"Concession"}, 
-            {t:"Winston Churchill", h:"Speech"}, {t:"Adolf Hitler", h:"Expansion"}, {t:"Franklin D. Roosevelt", h:"New"}, 
-            {t:"Firebombing", h:"Civilian"}, {t:"League Mandates", h:"Territories"}
+            {t:"Militarism", h:"Army"}, {t:"Alliance System", h:"Web"}, {t:"Total War", h:"Everyone"}, 
+            {t:"Trench Warfare", h:"Mud"}, {t:"Propaganda", h:"Posters"}, {t:"Treaty of Versailles", h:"Guilt"}, 
+            {t:"League of Nations", h:"Weak"}, {t:"Great Depression", h:"Stocks"}, {t:"New Deal", h:"FDR"}, 
+            {t:"Fascism", h:"State"}, {t:"Totalitarianism", h:"Dictator"}, {t:"Russian Revolution", h:"Lenin"}, 
+            {t:"Bolsheviks", h:"Reds"}, {t:"Joseph Stalin", h:"Purge"}, {t:"Five-Year Plans", h:"Quotas"}, 
+            {t:"The Holocaust", h:"Shoah"}, {t:"Armenian Genocide", h:"Young"}, {t:"World War II", h:"Axis"}, 
+            {t:"Blitzkrieg", h:"Lightning"}, {t:"Atomic Bomb", h:"Trinity"}, {t:"Firebombing", h:"Incendiary"}, 
+            {t:"Appeasement", h:"Munich"}
         ],
         "8": [
-            {t:"Cold War", h:"Ideology"}, {t:"Containment", h:"Truman"}, {t:"Proxy War", h:"Indirect"}, 
-            {t:"NATO", h:"Alliance"}, {t:"Warsaw Pact", h:"Bloc"}, {t:"Decolonization", h:"Independence"}, 
-            {t:"Partition of India", h:"Migration"}, {t:"Non-Aligned Movement", h:"Neutrality"}, {t:"Cuban Missile Crisis", h:"Brinkmanship"}, 
-            {t:"Great Leap Forward", h:"Collectivization"}, {t:"Cultural Revolution", h:"Purge"}, {t:"Apartheid", h:"Segregation"}, 
-            {t:"Nelson Mandela", h:"Resistance"}, {t:"Ho Chi Minh", h:"Nationalism"}, {t:"Kwame Nkrumah", h:"Pan-African"}, 
-            {t:"Mao Zedong", h:"Peasant"}, {t:"Gorbachev", h:"Restructuring"}, {t:"Iron Curtain", h:"Division"}, 
-            {t:"Space Race", h:"Technology"}, {t:"Zionism", h:"State"}
+            {t:"Cold War", h:"Freeze"}, {t:"Containment", h:"Stop"}, {t:"Truman Doctrine", h:"Money"}, 
+            {t:"Marshall Plan", h:"Rebuild"}, {t:"NATO", h:"North"}, {t:"Warsaw Pact", h:"East"}, 
+            {t:"Proxy War", h:"Substitute"}, {t:"Korean War", h:"Parallel"}, {t:"Vietnam War", h:"Domino"}, 
+            {t:"Cuban Missile Crisis", h:"Thirteen"}, {t:"Non-Aligned Movement", h:"Neutral"}, {t:"Decolonization", h:"Freedom"}, 
+            {t:"Partition of India", h:"Borders"}, {t:"Nelson Mandela", h:"Robben"}, {t:"Apartheid", h:"Segregation"}, 
+            {t:"Ho Chi Minh", h:"Uncle"}, {t:"Kwame Nkrumah", h:"Ghana"}, {t:"Mao Zedong", h:"Chairman"}, 
+            {t:"Great Leap Forward", h:"Steel"}, {t:"Cultural Revolution", h:"Red"}, {t:"Deng Xiaoping", h:"Cats"}, 
+            {t:"Mikhail Gorbachev", h:"Glasnost"}, {t:"Zionism", h:"Homeland"}
         ],
         "9": [
-            {t:"Globalization", h:"Interconnected"}, {t:"Green Revolution", h:"Agriculture"}, {t:"Climate Change", h:"Emissions"}, 
-            {t:"Knowledge Economy", h:"Information"}, {t:"Multinational Corporation", h:"Outsourcing"}, {t:"World Trade Organization", h:"Tariffs"}, 
-            {t:"Free Market", h:"Liberalization"}, {t:"Internet", h:"Communication"}, {t:"Vaccines", h:"Eradication"}, 
-            {t:"Pandemics", h:"Global"}, {t:"United Nations", h:"Diplomacy"}, {t:"Human Rights", h:"Declaration"}, 
-            {t:"NAFTA", h:"Regional"}, {t:"Consumerism", h:"Culture"}, {t:"Social Media", h:"Networks"}, 
-            {t:"Renewable Energy", h:"Sustainable"}, {t:"Antibiotics", h:"Resistance"}, {t:"Artificial Intelligence", h:"Automation"}, 
-            {t:"Greenpeace", h:"Activism"}, {t:"Medical Innovation", h:"Longevity"}
+            {t:"Globalization", h:"Shrinking"}, {t:"Green Revolution", h:"Yields"}, {t:"Medical Innovations", h:"Penicillin"}, 
+            {t:"Vaccines", h:"Polio"}, {t:"Pandemics", h:"Flu"}, {t:"Climate Change", h:"Carbon"}, 
+            {t:"Kyoto Protocol", h:"Treaty"}, {t:"Knowledge Economy", h:"Data"}, {t:"Multinational Corporations", h:"Brands"}, 
+            {t:"World Trade Organization", h:"Rules"}, {t:"NAFTA", h:"Blocs"}, {t:"Consumer Culture", h:"Buy"}, 
+            {t:"United Nations", h:"Peacekeepers"}, {t:"Declaration of Human Rights", h:"Eleanor"}, {t:"Liberation Theology", h:"Priests"}, 
+            {t:"Civil Rights Movement", h:"March"}, {t:"Greenpeace", h:"Environment"}, {t:"World Health Organization", h:"Agency"}, 
+            {t:"Artificial Intelligence", h:"Turing"}, {t:"Social Media", h:"Scroll"}, {t:"Space Race", h:"Orbit"}, 
+            {t:"Arab Spring", h:"Tweets"}
         ]
     };
 
@@ -199,25 +324,38 @@
     function addField(name = "") {
         const div = document.createElement('div');
         div.className = 'player-row';
-        div.innerHTML = `<input type="text" class="p-in" placeholder="Student Name" value="${name}"><button class="btn-del" onclick="this.parentElement.remove()">×</button>`;
+        div.innerHTML = `
+            <input type="text" class="p-in" placeholder="Agent Name" value="${name}">
+            <button class="btn-del" onclick="this.parentElement.remove()">×</button>
+        `;
         document.getElementById('setup-fields').appendChild(div);
     }
+    
     // Default 4 players
     for(let i=0; i<4; i++) addField();
 
     function initGame() {
         const names = Array.from(document.querySelectorAll('.p-in')).map(i => i.value.trim().toUpperCase()).filter(n => n);
-        if(names.length < 3) return alert("Requires at least 3 players.");
+        if(names.length < 3) return alert("Requires at least 3 agents to play.");
 
-        // Randomized Imposter Logic
         const min = parseInt(document.getElementById('imp-min').value);
         const max = parseInt(document.getElementById('imp-max').value);
-        g.totalImps = Math.min(Math.floor(Math.random() * (max - min + 1)) + min, names.length - 2);
+        
+        if (min > max || min >= names.length) {
+            return alert("Invalid Mole parameters. Check your min/max settings.");
+        }
+
+        g.totalImps = Math.min(Math.floor(Math.random() * (max - min + 1)) + min, names.length - 1);
 
         const unit = document.getElementById('unit-select').value;
         const pool = (unit === 'all' ? Object.values(CED_DB).flat() : CED_DB[unit]).filter(item => !g.usedInSession.includes(item.t));
         
-        if(pool.length === 0) g.usedInSession = [];
+        if(pool.length === 0) {
+            alert("All terms in this unit exhausted! Resetting the term memory bank.");
+            g.usedInSession = [];
+            return initGame();
+        }
+
         g.term = pool[Math.floor(Math.random() * pool.length)];
         g.usedInSession.push(g.term.t);
 
@@ -247,9 +385,19 @@
         const box = document.getElementById('role-card');
         const p = g.players[g.currentIdx];
         if(p.role === 'Mole') {
-            box.innerHTML = `<h2 style="color:var(--red)">THE MOLE</h2><p class="subtitle">Intercepted Hint</p><h1 style="font-size:2.5rem;">${g.term.h}</h1>`;
+            box.innerHTML = `
+                <h2 style="color:var(--red); font-weight: 800; margin:0;">THE MOLE</h2>
+                <p class="subtitle" style="margin-top: 10px;">Intercepted Hint</p>
+                <h1 style="font-size:2.8rem; margin: 10px 0;">${g.term.h}</h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Blend in. Fake it.</p>
+            `;
         } else {
-            box.innerHTML = `<h2 style="color:var(--green)">CIVILIAN</h2><p class="subtitle">Target Concept</p><h1 style="font-size:1.8rem;">${g.term.t}</h1>`;
+            box.innerHTML = `
+                <h2 style="color:var(--green); font-weight: 800; margin:0;">HISTORIAN</h2>
+                <p class="subtitle" style="margin-top: 10px;">Target Concept</p>
+                <h1 style="font-size:2.2rem; margin: 10px 0;">${g.term.t}</h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Describe it safely.</p>
+            `;
         }
     }
 
@@ -302,17 +450,15 @@
         if(p.role === 'Mole') {
             status.innerText = "WAS THE MOLE";
             status.style.color = "var(--red)";
-            document.getElementById('res-desc').innerText = "Mole neutralized. The concept was: " + g.term.t;
+            document.getElementById('res-desc').innerText = `Threat neutralized. The historical concept was: ${g.term.t}`;
             
-            // Imposter found: Hide "Continue", make sure "Next Keyword" is visible
             btnKeepGoing.style.display = 'none';
             btnNextRound.style.display = 'block';
         } else {
             status.innerText = "WAS INNOCENT";
             status.style.color = "var(--green)";
-            document.getElementById('res-desc').innerText = "A civilian was ejected. The Mole is still out there.";
+            document.getElementById('res-desc').innerText = `A true historian was ejected. The Mole remains active.`;
             
-            // Innocent found: Show "Continue", hide "Next Keyword" (unless you want to abort early)
             btnKeepGoing.style.display = 'block';
             btnNextRound.style.display = 'none';
         }
@@ -321,9 +467,8 @@
     function keepGoing() {
         g.alive = g.alive.filter(idx => idx !== g.lastEjected);
         
-        // If game is over because 2 or fewer players remain, force a restart
         if(g.alive.length <= 2) {
-            alert("Not enough players left to vote! The Mole wins.");
+            alert("Not enough agents remaining to call a vote. THE MOLE WINS.");
             reset();
             return;
         }
@@ -339,7 +484,6 @@
     }
 
     function reset() {
-        // Keeps player names but takes you back to setup
         showScreen('setup');
     }
 </script>
