@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AP World: Heimler Edition</title>
+    <title>AP World: Imposter Game</title>
     <style>
         :root { 
             --bg: #000000; 
@@ -16,21 +16,27 @@
             --green-grad: linear-gradient(135deg, #32d74b, #30db5b);
             --blue: #0a84ff; 
             --blue-grad: linear-gradient(135deg, #0a84ff, #64d2ff);
+            --purple: #bf5af2;
+            --purple-grad: linear-gradient(135deg, #bf5af2, #da8fff);
+            --orange: #ff9f0a;
+            --orange-grad: linear-gradient(135deg, #ff9f0a, #ffd60a);
             --border: #38383a; 
             --card-bg: #2c2c2e;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
             margin: 0; 
-            padding: 15px; 
+            padding: 30px 15px; 
             display: flex; 
             justify-content: center; 
+            align-items: flex-start; 
             min-height: 100vh;
-            align-items: center;
         }
+        
         #app { 
             width: 100%; 
             max-width: 450px; 
@@ -39,23 +45,39 @@
             padding: 30px 25px; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.8); 
             position: relative;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin: auto 0; 
         }
         
-        /* Smooth Fade Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        /* --- Animations --- */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.85) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(50, 215, 75, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(50, 215, 75, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(50, 215, 75, 0); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
 
-        .screen { display: none; flex-direction: column; gap: 18px; animation: fadeIn 0.4s ease forwards; }
+        .screen { display: none; flex-direction: column; gap: 18px; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .active { display: flex; }
         
         h1 { margin: 0; font-size: 1.8rem; color: white; text-align: center; font-weight: 800; letter-spacing: -0.5px; }
         .subtitle { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; font-weight: 600; margin: 0; }
         .left-label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; font-weight: 600; }
         
-        input, select { 
+        input[type="text"], input[type="number"], select { 
             background: var(--card-bg); 
             border: 1px solid var(--border); 
             color: white; 
@@ -64,10 +86,11 @@
             width: 100%; 
             font-size: 1.05rem; 
             outline: none;
-            transition: 0.2s;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             appearance: none;
         }
-        input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3); }
+        input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.25); transform: translateY(-2px); }
+        select { text-align: center; }
         
         button { 
             background: var(--blue-grad); 
@@ -78,20 +101,25 @@
             font-size: 1.05rem;
             font-weight: 700; 
             cursor: pointer; 
-            transition: all 0.15s ease; 
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
-        button:active:not(:disabled) { transform: scale(0.96); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        button:disabled { cursor: not-allowed; opacity: 0.5; }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        button:active:not(:disabled) { transform: scale(0.96) translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        button:disabled { cursor: not-allowed; opacity: 0.4; background: var(--card-bg); color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); transform: none; }
         
-        .btn-success { background: var(--green-grad); }
+        .btn-success { background: var(--green-grad); animation: pulseGlow 2.5s infinite; }
+        .btn-success:active { animation: none; }
         .btn-danger { background: var(--red-grad); }
+        .btn-danger:hover { animation: shake 0.4s ease-in-out; }
         .btn-sec { background: var(--card-bg); border: 1px solid var(--border); color: var(--text); box-shadow: none; }
+        .btn-sec:hover { background: #3a3a3c; }
         
         .card { 
             background: var(--card-bg); 
             border: 1px solid var(--border); 
-            padding: 35px 20px; 
+            padding: 25px 20px; 
             border-radius: 22px; 
             text-align: center; 
             display: flex;
@@ -99,6 +127,7 @@
             gap: 10px;
             justify-content: center;
         }
+        
         .vote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
         #setup-fields { 
@@ -108,12 +137,13 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            padding-right: 5px;
+            scroll-behavior: smooth;
         }
-        /* Custom Scrollbar */
         #setup-fields::-webkit-scrollbar { width: 6px; }
         #setup-fields::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-        .player-row { display: flex; gap: 10px; }
+        .player-row { display: flex; gap: 10px; animation: slideUpFade 0.3s ease forwards; }
         .btn-del { 
             background: rgba(255, 69, 58, 0.1); 
             color: var(--red); 
@@ -124,6 +154,7 @@
             font-size: 1.5rem;
             box-shadow: none;
         }
+        .btn-del:hover { background: rgba(255, 69, 58, 0.2); }
         
         .badge {
             background: rgba(255,255,255,0.1);
@@ -135,14 +166,48 @@
             color: var(--text-muted);
             letter-spacing: 1px;
         }
+
+        /* iOS Toggle Switch */
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 14px 16px; border-radius: 16px; border: 1px solid var(--border); }
+        .toggle-label { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .3s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        
+        input:checked + .slider { background-color: var(--green); }
+        input.jester-tog:checked + .slider { background-color: var(--purple); }
+        input.traitor-tog:checked + .slider { background-color: var(--orange); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .agent-btn { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 18px; border-radius: 18px; background: var(--card-bg); 
+            border: 1px solid var(--border); font-size: 1.1rem; font-weight: 600; 
+            color: white; cursor: pointer; transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1); 
+            margin-bottom: 10px; opacity: 0;
+            animation: slideUpFade 0.4s forwards;
+        }
+        .agent-btn:hover:not(.viewed) { background: #3a3a3c; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .agent-btn:active:not(.viewed) { transform: scale(0.97); }
+        .agent-btn.viewed { opacity: 0.4; cursor: not-allowed; border-style: dashed; animation: none; opacity: 0.4 !important; }
+        
+        .def-box { margin-top: 15px; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border-left: 4px solid var(--blue); }
+        .def-title { font-size: 0.75rem; color: var(--blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 800; margin-bottom: 5px; }
+        .def-text { font-size: 0.9rem; line-height: 1.4; color: var(--text); margin-bottom: 10px; }
+        .app-title { font-size: 0.75rem; color: var(--green); text-transform: uppercase; letter-spacing: 1px; font-weight: 800; margin-bottom: 5px; }
+
+        /* Timer Bar */
+        #timer-bar-container { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 5px; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: var(--green); transition: width 1s linear, background-color 0.5s ease; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="setup" class="screen active">
-        <h1>AP WORLD: IMPOSTER</h1>
-        <p class="subtitle">CED Core Vocabulary</p>
+        <h1>AP WORLD: IMPOSTER </h1>
+        <p class="subtitle">CED Vocabulary</p>
         
         <select id="unit-select">
             <option value="all">Full Exam Review (Units 1-9)</option>
@@ -157,7 +222,7 @@
             <option value="9">Unit 9: Globalization</option>
         </select>
 
-        <div style="display: flex; gap: 15px;">
+        <div style="display: flex; gap: 10px;">
             <div style="flex:1">
                 <label class="left-label">Min Moles</label>
                 <input type="number" id="imp-min" value="1" min="1">
@@ -166,29 +231,68 @@
                 <label class="left-label">Max Moles</label>
                 <input type="number" id="imp-max" value="1" min="1">
             </div>
+            <div style="flex:1.2">
+                <label class="left-label">Timer</label>
+                <select id="timer-select">
+                    <option value="0">Off</option>
+                    <option value="15">15s</option>
+                    <option value="30">30s</option>
+                    <option value="45">45s</option>
+                    <option value="60">60s</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="toggle-container">
+                <span class="toggle-label">Mole Hints</span>
+                <label class="switch">
+                    <input type="checkbox" id="hints-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="toggle-container" style="flex: 1;">
+                    <span class="toggle-label" style="color: var(--purple);">Jester</span>
+                    <label class="switch">
+                        <input type="checkbox" id="jester-toggle" class="jester-tog">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-container" style="flex: 1;">
+                    <span class="toggle-label" style="color: var(--orange);">Traitor</span>
+                    <label class="switch">
+                        <input type="checkbox" id="traitor-toggle" class="traitor-tog">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div id="setup-fields"></div>
-        <button class="btn-sec" onclick="addField()">+ Add Analyst</button>
-        <button class="btn-success" onclick="initGame()">Commence Briefing</button>
+        <button class="btn-sec" onclick="addField('', true)" style="padding: 12px;">+ Add Agent</button>
+        <button class="btn-success" style="animation: none;" onclick="initGame()">Commence Briefing</button>
     </div>
 
-    <div id="pass" class="screen">
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; padding: 40px 0;">
-            <p class="subtitle">Classified Intel For:</p>
-            <h1 id="pass-name" style="color: var(--blue); font-size: 2.8rem;"></h1>
-            <p style="color: var(--text-muted); text-align: center; font-size: 0.9rem;">Ensure no other agents are looking at your screen.</p>
-        </div>
-        <button onclick="revealRole()">View My Intel</button>
+    <div id="hub" class="screen">
+        <h1>INTEL HUB</h1>
+        <p class="subtitle">Select your name to view orders</p>
+        <div id="hub-list" style="margin-top: 10px; max-height: 350px; overflow-y: auto; padding-right: 5px;"></div>
+        <button id="btn-start-debate" class="btn-success" style="display: none; margin-top: 10px;" onclick="startDebate()">Begin Debate Phase</button>
     </div>
 
     <div id="secret" class="screen">
         <div id="role-card" class="card" style="min-height: 250px;"></div>
-        <button class="btn-sec" onclick="nextSecret()">Intel Secured</button>
+        <button class="btn-sec" onclick="backToHub()">Intel Secured</button>
     </div>
 
     <div id="debate" class="screen">
         <div class="badge" id="round-tag">ROUND 1</div>
+        
+        <div id="timer-bar-container">
+            <div id="timer-bar"></div>
+        </div>
+
         <div style="text-align: center; margin: 10px 0;">
             <p class="subtitle">Currently Speaking</p>
             <h1 id="speaker-name" style="color: var(--blue); font-size: 2.5rem; margin-top: 5px;"></h1>
@@ -199,224 +303,351 @@
         <button onclick="nextSpeaker()">End My Turn</button>
         <button id="vote-btn" class="btn-danger" onclick="showVoting()" style="margin-top:10px;">Call Ejection Vote</button>
         
-        <button class="btn-sec" onclick="reset()" style="margin-top:15px; font-size: 0.8rem; padding: 12px; border: none; background: transparent; color: var(--text-muted);">⚠ Emergency Reset</button>
+        <button class="btn-sec" onclick="reset()" style="margin-top:15px; font-size: 0.8rem; padding: 12px; border: none; background: transparent; color: var(--text-muted); box-shadow: none;">⚠ Emergency Reset</button>
     </div>
 
     <div id="voting" class="screen">
         <h1>EJECTION PROTOCOL</h1>
-        <p class="subtitle">Select Suspected Mole</p>
-        <div id="vote-list" class="vote-grid" style="margin-top: 10px;"></div>
-        <button class="btn-sec" onclick="showScreen('debate')" style="margin-top: 20px;">Cancel Vote</button>
+        <p class="subtitle">Select Suspected Threat</p>
+        <div id="vote-list" class="vote-grid" style="margin-top: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px;"></div>
+        <button class="btn-sec" onclick="showScreen('debate'); resumeTimer();" style="margin-top: 20px;">Cancel Vote</button>
     </div>
 
     <div id="result" class="screen">
         <h1 id="res-header">TRIBUNAL RESULTS</h1>
-        <div class="card" style="margin: 20px 0;">
-            <h2 id="res-name" style="margin: 0; font-size: 2rem;"></h2>
-            <div id="res-status" style="font-weight:900; font-size: 1.8rem; margin:10px 0;"></div>
-            <p id="res-desc" style="color: var(--text-muted); margin: 0; line-height: 1.4;"></p>
+        <div class="card" style="margin: 10px 0; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
+            <h2 id="res-name" style="margin: 0; font-size: 1.8rem;"></h2>
+            <div id="res-status" style="font-weight:900; font-size: 1.5rem; margin:5px 0;"></div>
+            <p id="res-desc" style="color: var(--text-muted); margin: 0; line-height: 1.4; font-size: 0.9rem;"></p>
+            
+            <div id="res-def" class="def-box" style="display: none;">
+                <div class="def-title">Definition</div>
+                <div id="def-text" class="def-text"></div>
+                <div class="app-title">AP Application</div>
+                <div id="app-text" class="def-text" style="margin-bottom: 0;"></div>
+            </div>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
             <button id="btn-keep-going" class="btn-sec" onclick="keepGoing()">Continue Investigation</button>
             <button id="btn-next-round" class="btn-success" onclick="initGame()">Next Keyword</button>
-            <button class="btn-sec" onclick="reset()" style="font-size:0.85rem; border: none; background: transparent; color: var(--text-muted);">Quit to Menu</button>
+            <button class="btn-sec" onclick="reset()" style="font-size:0.85rem; border: none; background: transparent; color: var(--text-muted); box-shadow: none; padding: 10px;">Quit to Menu</button>
         </div>
     </div>
 </div>
 
 <script>
-    // 200 Highly-Tested AP World History CED Terms
-    const CED_DB = {
+    const rawDB = {
         "1": [
-            {t:"Song Dynasty", h:"Merit"}, {t:"Filial Piety", h:"Respect"}, {t:"Grand Canal", h:"Waterway"}, 
-            {t:"Neo-Confucianism", h:"Syncretic"}, {t:"Champa Rice", h:"Drought"}, {t:"Dar al-Islam", h:"House"}, 
-            {t:"House of Wisdom", h:"Baghdad"}, {t:"Seljuk Empire", h:"Turks"}, {t:"Delhi Sultanate", h:"India"}, 
-            {t:"Abbasid Caliphate", h:"Golden"}, {t:"Sufism", h:"Mystics"}, {t:"Srivijaya Empire", h:"Strait"}, 
-            {t:"Khmer Empire", h:"Angkor"}, {t:"Mali Empire", h:"Sundiata"}, {t:"Mansa Musa", h:"Gold"}, 
-            {t:"Mississippian Culture", h:"Mounds"}, {t:"Inca Empire", h:"Andes"}, {t:"Mit'a System", h:"Labor"}, 
-            {t:"Aztec Empire", h:"Tenochtitlan"}, {t:"Tribute System", h:"Payment"}, {t:"Feudalism", h:"Decentralized"}, 
-            {t:"Serfdom", h:"Tied"}
+            ["Song Dynasty", "Bureaucracy", "Chinese dynasty (960-1279) known for artistic brilliance and a booming commercial economy.", "Use as evidence for state-building via Confucian civil service exams and innovations like paper money."],
+            ["Filial Piety", "Hierarchy", "Confucian principle emphasizing respect for elders and ancestors.", "Demonstrates how East Asian empires maintained social harmony and justified imperial rule."],
+            ["Grand Canal", "Infrastructure", "Massive waterway connecting northern and southern China.", "Evidence of state-sponsored infrastructure driving internal trade and economic integration."],
+            ["Champa Rice", "Agriculture", "Fast-ripening, drought-resistant strain of rice from Vietnam.", "Perfect example of agricultural innovation causing massive population growth in East Asia."],
+            ["Dar al-Islam", "Territory", "The expansive 'House of Islam' spanning from Spain to India.", "Illustrates the spread of religion driving cultural and technological cross-pollination."],
+            ["House of Wisdom", "Scholarship", "Abbasid academic center in Baghdad for translation and research.", "Use to show the transfer and preservation of Greek/Indian knowledge by Islamic scholars."],
+            ["Delhi Sultanate", "Regime", "Islamic empire based in northern India (1206-1526).", "Demonstrates the cultural synthesis and conflict between Islam and Hinduism (e.g., the jizya tax)."],
+            ["Sufism", "Spirituality", "Mystical branch of Islam focusing on direct personal connection to God.", "Key evidence for the peaceful spread of Islam into South and Southeast Asia via missionaries."],
+            ["Mali Empire", "Wealth", "Powerful West African empire known for gold trade and Islamic centers.", "Shows how trans-Saharan trade built centralized states and integrated Africa into global networks."],
+            ["Mansa Musa", "Pilgrimage", "Ruler of Mali who undertook a legendary hajj to Mecca.", "Illustrates the wealth of African states and the expansion of the Islamic world."],
+            ["Inca Empire", "Mountains", "Massive South American empire in the Andes.", "Use to discuss centralized state-building without written language (quipus) and advanced infrastructure (roads)."],
+            ["Mit'a System", "Obligation", "Incan system of mandatory public service/labor.", "Evidence of coercive state labor systems used for monumental architecture and agriculture."],
+            ["Aztec Empire", "Sacrifice", "Mesoamerican empire centered at Tenochtitlan.", "Shows state-building through a tribute system and religious legitimacy (human sacrifice)."],
+            ["Feudalism", "Loyalty", "Decentralized political/social system of medieval Europe based on land and loyalty.", "Contrasts with the highly centralized bureaucracies of China or the Islamic Caliphates."],
+            ["Serfdom", "Class", "Coerced labor system where peasants were tied to the land.", "Use to compare agricultural labor systems globally before the modern era."]
         ],
         "2": [
-            {t:"Silk Roads", h:"Luxury"}, {t:"Kashgar", h:"Oasis"}, {t:"Samarkand", h:"Mosque"}, 
-            {t:"Caravanserai", h:"Inn"}, {t:"Paper Money", h:"Flying"}, {t:"Pax Mongolica", h:"Peace"}, 
-            {t:"Genghis Khan", h:"Bow"}, {t:"Yuan Dynasty", h:"Kublai"}, {t:"Indian Ocean Trade", h:"Maritime"}, 
-            {t:"Monsoon Winds", h:"Seasonal"}, {t:"Astrolabe", h:"Stars"}, {t:"Lateen Sail", h:"Triangle"}, 
-            {t:"Swahili City-States", h:"East"}, {t:"Zheng He", h:"Treasure"}, {t:"Trans-Saharan Trade", h:"Sand"}, 
-            {t:"Camel Saddle", h:"Hump"}, {t:"Ibn Battuta", h:"Traveler"}, {t:"Marco Polo", h:"Venice"}, 
-            {t:"Bubonic Plague", h:"Fleas"}, {t:"Gunpowder", h:"Explosive"}, {t:"Magnetic Compass", h:"North"}, 
-            {t:"Diasporic Communities", h:"Merchant"}
+            ["Silk Roads", "Overland", "Ancient network of Eurasian trade routes connecting East Asia to Europe.", "Use to discuss the exchange of luxury goods, religions (Buddhism), and pathogens (Plague)."],
+            ["Caravanserai", "Shelter", "Roadside inns along trade routes for merchants and camels.", "Evidence of infrastructure developed to support and expand interregional trade."],
+            ["Paper Money", "Economy", "Currency innovation during the Tang/Song dynasties.", "Shows how states facilitated commercial growth and moved away from heavy coin bartering."],
+            ["Pax Mongolica", "Stability", "Era of relative peace and stability across Eurasia under the Mongol Empire.", "Key factor in the revitalization of the Silk Roads and massive cross-cultural exchanges."],
+            ["Genghis Khan", "Conqueror", "Founder of the Mongol Empire who united nomadic tribes.", "Illustrates how nomadic peoples impacted settled societies through warfare and subsequent trade integration."],
+            ["Indian Ocean Trade", "Currents", "Maritime trade network connecting Africa, the Middle East, and Asia.", "Use for discussing bulk goods trade, monsoon wind knowledge, and diasporic communities."],
+            ["Monsoon Winds", "Weather", "Seasonal wind patterns in the Indian Ocean.", "Essential environmental knowledge that dictated the timing and routes of maritime trade."],
+            ["Astrolabe", "Technology", "Navigational instrument used to determine latitude by the stars.", "Evidence of technological transfers (from Islamic world) that revolutionized maritime travel."],
+            ["Swahili City-States", "Coastline", "Commercial urban centers on the East African coast.", "Shows the synthesis of indigenous African and Islamic cultures driven by Indian Ocean trade."],
+            ["Zheng He", "Fleet", "Ming Dynasty admiral who led massive treasure fleets.", "Illustrates Chinese technological supremacy and the expansion of their tribute system before isolation."],
+            ["Trans-Saharan Trade", "Desert", "Network connecting West Africa to the Mediterranean.", "Key context for the spread of Islam into West Africa and the rise of gold/salt empires like Mali."],
+            ["Ibn Battuta", "Observer", "Moroccan Muslim scholar and traveler.", "His writings serve as primary evidence for the extent and unity of the Islamic world (Dar al-Islam)."],
+            ["Marco Polo", "Outsider", "Venetian merchant who traveled to the Yuan Dynasty.", "His accounts stimulated European interest in Asian goods, eventually driving the Age of Exploration."],
+            ["Bubonic Plague", "Epidemic", "Devastating disease that spread across Eurasia in the 14th century.", "Perfect example of the unintended environmental consequences of increased global interconnectedness."]
         ],
         "3": [
-            {t:"Gunpowder Empires", h:"Cannons"}, {t:"Ottoman Empire", h:"Anatolia"}, {t:"Suleiman the Magnificent", h:"Lawgiver"}, 
-            {t:"Devshirme", h:"Boys"}, {t:"Janissaries", h:"Elite"}, {t:"Safavid Empire", h:"Shi'a"}, 
-            {t:"Mughal Empire", h:"India"}, {t:"Akbar the Great", h:"Tolerant"}, {t:"Qing Dynasty", h:"Manchu"}, 
-            {t:"Tokugawa Shogunate", h:"Edo"}, {t:"Samurai", h:"Swords"}, {t:"Divine Right", h:"God"}, 
-            {t:"Versailles", h:"Palace"}, {t:"Taj Mahal", h:"Tomb"}, {t:"Tax Farming", h:"Collection"}, 
-            {t:"Protestant Reformation", h:"Theses"}, {t:"Martin Luther", h:"Indulgences"}, {t:"Catholic Counter-Reformation", h:"Trent"}, 
-            {t:"Jesuits", h:"Society"}, {t:"Sikhism", h:"Punjab"}, {t:"Sunni-Shi'a Split", h:"Succession"}, 
-            {t:"Boyars", h:"Nobles"}
+            ["Gunpowder Empires", "Artillery", "Large, multiethnic states in Asia that relied on firearms to conquer.", "Includes the Ottomans, Safavids, and Mughals; shows the shift in military technology shaping state power."],
+            ["Ottoman Empire", "Expansion", "Major Islamic empire centered in Anatolia that conquered Constantinople.", "Use to discuss the use of religion for legitimacy and the disruption of European trade routes to Asia."],
+            ["Devshirme", "Recruitment", "Ottoman system of taking Christian boys to serve the state.", "Evidence of a state creating a loyal bureaucratic and military elite (Janissaries) to centralize power."],
+            ["Safavid Empire", "Sectarian", "Shi'a Islamic empire located in modern-day Iran.", "Illustrates the use of strict religious ideology to unify a state and cause conflict (vs. Sunni Ottomans)."],
+            ["Mughal Empire", "Subcontinent", "Islamic gunpowder empire ruling over a Hindu majority in India.", "Great for essays on religious tolerance (Akbar) vs. intolerance (Aurangzeb) in state-building."],
+            ["Qing Dynasty", "Foreigners", "Manchu-led dynasty of China (1644-1912).", "Shows how foreign rulers used traditional Chinese systems (Confucianism, exams) to legitimize their rule."],
+            ["Tokugawa Shogunate", "Control", "Feudal military government of Japan known for its strict isolationist policies.", "Example of a state centralizing power by strictly controlling the nobility (daimyo) and foreign influence."],
+            ["Samurai", "Warriors", "Military nobility in Japan.", "Shows the transition from a decentralized warrior class to salaried bureaucrats as the state centralized."],
+            ["Divine Right", "Justification", "European doctrine that kings derive their authority from God.", "Use to explain how absolutist monarchs legitimized their consolidation of power."],
+            ["Versailles", "Architecture", "Massive palace built by Louis XIV of France.", "Classic example of using monumental architecture to display power and control the nobility."],
+            ["Tax Farming", "Privatization", "System where private individuals collect taxes for the state and keep a cut.", "Demonstrates methods used by empires (like the Ottomans) to generate revenue, often leading to corruption."],
+            ["Protestant Reformation", "Schism", "16th-century religious, political, and cultural upheaval in Catholic Europe.", "Shattered the religious unity of Europe, leading to massive state-sponsored religious wars."],
+            ["Sunni-Shi'a Split", "Division", "Fundamental division within Islam regarding leadership.", "The political exploitation of this split fueled the intense rivalry between the Ottoman and Safavid empires."]
         ],
         "4": [
-            {t:"Caravel", h:"Ship"}, {t:"Fluyt", h:"Dutch"}, {t:"Carrack", h:"Portugal"}, 
-            {t:"Columbian Exchange", h:"Transfer"}, {t:"Mercantilism", h:"Wealth"}, {t:"Joint-Stock Company", h:"Shares"}, 
-            {t:"Trading-Post Empire", h:"Coasts"}, {t:"Encomienda System", h:"Grant"}, {t:"Hacienda System", h:"Estate"}, 
-            {t:"Chattel Slavery", h:"Property"}, {t:"Middle Passage", h:"Voyage"}, {t:"Casta System", h:"Blood"}, 
-            {t:"Peninsulares", h:"Iberian"}, {t:"Creoles", h:"Born"}, {t:"Mestizo", h:"Mixed"}, 
-            {t:"Silver Trade", h:"Potosi"}, {t:"Sugar Plantations", h:"Sweet"}, {t:"Vodun", h:"Spirits"}, 
-            {t:"Maroon Societies", h:"Runaways"}, {t:"Tokugawa Isolation", h:"Closed"}, {t:"East India Company", h:"Monopoly"}, 
-            {t:"Omani-European Rivalry", h:"Conflict"}, {t:"Treaty of Tordesillas", h:"Line"}
+            ["Columbian Exchange", "Hemispheres", "The biological exchange of plants, animals, and diseases between the Old and New Worlds.", "The most critical concept of Unit 4; caused massive demographic collapse in the Americas and population booms in Afro-Eurasia."],
+            ["Mercantilism", "Policy", "Economic theory driving European empires to maximize exports and accumulate silver.", "Used to justify colonialism, tariffs, and the exploitation of raw materials from the Americas."],
+            ["Joint-Stock Company", "Venture", "Businesses where investors pool money to fund expeditions (e.g., VOC, BEIC).", "Evidence of new capitalist mechanisms that allowed European states to dominate global trade routes."],
+            ["Trading-Post Empire", "Network", "Empire based on controlling trade routes rather than massive land conquest (e.g., Portugal).", "Shows the early phase of European expansion in the Indian Ocean before total territorial dominance."],
+            ["Encomienda System", "Coercion", "Spanish labor system rewarding conquerors with the labor of indigenous people.", "Use as evidence for the brutal, race-based coerced labor systems established in the Americas."],
+            ["Chattel Slavery", "Commodity", "System where human beings are treated as personal property to be bought and sold.", "Driven by the massive demand for labor on cash-crop plantations (sugar, tobacco) in the Americas."],
+            ["Middle Passage", "Transport", "The horrific oceanic journey of enslaved Africans across the Atlantic.", "Illustrates the human cost of the Triangular Trade and the demographic drain on West Africa."],
+            ["Casta System", "Stratification", "Strict racial hierarchy established by the Spanish in the Americas.", "Shows how empires managed diverse populations and how social status became explicitly tied to race/birthplace."],
+            ["Silver Trade", "Currency", "First truly global trade network, driven by Spanish American mines and Chinese demand.", "Use to connect the Spanish exploitation of the Americas to the commercialization of the Ming/Qing dynasties."],
+            ["Maroon Societies", "Escape", "Communities formed by escaped enslaved people in the Caribbean and Brazil.", "Crucial evidence of resistance against state-sponsored coerced labor systems."]
         ],
         "5": [
-            {t:"The Enlightenment", h:"Reason"}, {t:"John Locke", h:"Rights"}, {t:"Social Contract", h:"Agreement"}, 
-            {t:"Nationalism", h:"Identity"}, {t:"American Revolution", h:"Tea"}, {t:"French Revolution", h:"Bastille"}, 
-            {t:"Declaration of Rights of Man", h:"Document"}, {t:"Haitian Revolution", h:"Toussaint"}, {t:"Simon Bolivar", h:"Jamaica"}, 
-            {t:"Industrial Revolution", h:"Factories"}, {t:"Steam Engine", h:"Watt"}, {t:"Factory System", h:"Division"}, 
-            {t:"Fossil Fuels", h:"Coal"}, {t:"Meiji Restoration", h:"Emperor"}, {t:"Adam Smith", h:"Invisible"}, 
-            {t:"Capitalism", h:"Laissez-faire"}, {t:"Karl Marx", h:"Manifesto"}, {t:"Socialism", h:"Proletariat"}, 
-            {t:"Labor Unions", h:"Strike"}, {t:"Seneca Falls Convention", h:"Women"}, {t:"Taiping Rebellion", h:"Heavenly"}, 
-            {t:"Tanzimat Reforms", h:"Ottoman"}
+            ["The Enlightenment", "Philosophy", "Intellectual movement emphasizing reason, individualism, and natural rights.", "The ideological foundation for the Atlantic Revolutions and the challenge to absolute monarchies."],
+            ["Social Contract", "Governance", "Theory that governments exist to protect rights, and citizens can overthrow them if they fail.", "Key Enlightenment idea (Locke/Rousseau) that inspired the Declaration of Independence and French Revolution."],
+            ["Nationalism", "Allegiance", "A strong feeling of identity and loyalty tied to a shared language, culture, or borders.", "A driving force for 19th-century unifications (Germany, Italy) and anti-imperial rebellions."],
+            ["Haitian Revolution", "Emancipation", "Successful anti-slavery and anti-colonial insurrection led by Toussaint Louverture.", "The only fully successful slave revolt in history; terrified European elites and inspired global abolitionist movements."],
+            ["Simon Bolivar", "Liberator", "Creole leader of independence movements across South America.", "Wrote the 'Jamaica Letter'; exemplifies Creole frustration with mercantilism and the Peninsulare hierarchy."],
+            ["Industrial Revolution", "Transition", "The shift from agrarian, manual labor to machine-based manufacturing.", "Fundamentally altered global power dynamics, causing the rise of Europe and the decline of Asian manufacturing."],
+            ["Fossil Fuels", "Energy", "Coal and oil, which powered the steam engines of the Industrial Revolution.", "Key environmental factor that allowed humans to break past the biological limits of energy production."],
+            ["Meiji Restoration", "Overhaul", "State-sponsored industrialization and westernization of Japan.", "Shows a non-Western state successfully adapting to the threat of Western imperialism to maintain independence."],
+            ["Capitalism", "Market", "Economic system based on private ownership, free markets, and profit (Adam Smith).", "The dominant economic theory that drove industrial expansion and the decline of mercantilism."],
+            ["Karl Marx", "Critique", "Philosopher who argued capitalism exploited the working class (proletariat).", "His theories laid the foundation for socialism and communism as a reaction to industrial abuses."],
+            ["Labor Unions", "Organization", "Workers organizing collectively to demand better pay and conditions.", "Evidence of social reforms and pushback against the harsh realities of the factory system."]
         ],
         "6": [
-            {t:"Imperialism", h:"Empire"}, {t:"Social Darwinism", h:"Fittest"}, {t:"Civilizing Mission", h:"Burden"}, 
-            {t:"Scramble for Africa", h:"Berlin"}, {t:"King Leopold II", h:"Congo"}, {t:"Settler Colony", h:"Move"}, 
-            {t:"Sepoy Mutiny", h:"Cartridge"}, {t:"Export Economy", h:"Raw"}, {t:"Economic Imperialism", h:"Profit"}, 
-            {t:"Opium Wars", h:"Treaty"}, {t:"Spheres of Influence", h:"Chunks"}, {t:"Boxer Rebellion", h:"Fists"}, 
-            {t:"Cherokee Nation", h:"Tears"}, {t:"Ghost Dance", h:"Shirts"}, {t:"Xhosa Cattle-Killing", h:"Spirits"}, 
-            {t:"Mahdist War", h:"Sudan"}, {t:"Monroe Doctrine", h:"Hemisphere"}, {t:"Manifest Destiny", h:"West"}, 
-            {t:"Indentured Servitude", h:"Contract"}, {t:"Chinese Exclusion Act", h:"Ban"}, {t:"White Australia Policy", h:"Race"}, 
-            {t:"Ethnic Enclaves", h:"Neighborhoods"}
+            ["Imperialism", "Hegemony", "Policy of extending a country's power through diplomacy or military force.", "Fueled by the Industrial Revolution's need for raw materials and new markets for manufactured goods."],
+            ["Social Darwinism", "Pseudoscience", "Flawed application of 'survival of the fittest' to human societies and races.", "Used as the primary cultural/intellectual justification for European imperialism and racism."],
+            ["Scramble for Africa", "Partition", "Rapid colonization and division of Africa by European powers at the Berlin Conference.", "Illustrates how industrial powers aggressively divided the globe with zero regard for indigenous borders."],
+            ["King Leopold II", "Exploitation", "Belgian king who personally owned and brutally exploited the Congo Free State for rubber.", "The most extreme example of the atrocities committed under economic imperialism."],
+            ["Export Economy", "Dependency", "Colonial economies forced to produce single raw materials (cotton, rubber) for Europe.", "Shows the economic legacy of imperialism, stunting the industrial development of colonized nations."],
+            ["Opium Wars", "Conflict", "Wars between Britain and China over the British smuggling of narcotics.", "Marks the decline of the Qing Dynasty and the forced opening of China to Western 'Spheres of Influence'."],
+            ["Sepoy Mutiny", "Backlash", "1857 rebellion of Indian soldiers against the British East India Company.", "Resulted in the British government taking direct, brutal control of India (the British Raj)."],
+            ["Ghost Dance", "Revival", "Native American religious movement attempting to restore traditional life and expel settlers.", "Evidence of anti-imperial resistance fueled by religion and desperation."],
+            ["Chinese Exclusion Act", "Legislation", "1882 US law explicitly banning Chinese immigration.", "Demonstrates the rise of racism and nativism reacting to the global migrations caused by industrialization."]
         ],
         "7": [
-            {t:"Militarism", h:"Army"}, {t:"Alliance System", h:"Web"}, {t:"Total War", h:"Everyone"}, 
-            {t:"Trench Warfare", h:"Mud"}, {t:"Propaganda", h:"Posters"}, {t:"Treaty of Versailles", h:"Guilt"}, 
-            {t:"League of Nations", h:"Weak"}, {t:"Great Depression", h:"Stocks"}, {t:"New Deal", h:"FDR"}, 
-            {t:"Fascism", h:"State"}, {t:"Totalitarianism", h:"Dictator"}, {t:"Russian Revolution", h:"Lenin"}, 
-            {t:"Bolsheviks", h:"Reds"}, {t:"Joseph Stalin", h:"Purge"}, {t:"Five-Year Plans", h:"Quotas"}, 
-            {t:"The Holocaust", h:"Shoah"}, {t:"Armenian Genocide", h:"Young"}, {t:"World War II", h:"Axis"}, 
-            {t:"Blitzkrieg", h:"Lightning"}, {t:"Atomic Bomb", h:"Trinity"}, {t:"Firebombing", h:"Incendiary"}, 
-            {t:"Appeasement", h:"Munich"}
+            ["Total War", "Society", "Conflict where nations mobilize all civilian, economic, and military resources for victory.", "Defines WWI and WWII, explaining the use of propaganda, rationing, and the targeting of civilian infrastructure."],
+            ["Treaty of Versailles", "Settlement", "The punitive treaty that ended WWI, placing massive guilt and reparations on Germany.", "Directly set the economic and political conditions that allowed Fascism and WWII to rise."],
+            ["Great Depression", "Collapse", "Severe global economic downturn triggered by the 1929 stock market crash.", "Led to governments taking a more active role in the economy (New Deal) and the rise of extremist dictatorships."],
+            ["Fascism", "Extremism", "Extreme right-wing, authoritarian, and ultranationalist political ideology.", "Rose in Italy and Germany as a violent rejection of both democratic capitalism and communism."],
+            ["Russian Revolution", "Overthrow", "The 1917 collapse of the Tsarist autocracy and rise of the Communist Bolsheviks.", "Removed Russia from WWI and created the first state based on Marxist ideology (the USSR)."],
+            ["Joseph Stalin", "Dictator", "Soviet leader who violently industrialized Russia through Five-Year Plans and purges.", "Example of a totalitarian state using terror and total economic control to modernize."],
+            ["The Holocaust", "Atrocity", "The systematic, state-sponsored genocide of six million Jews by Nazi Germany.", "The most horrific manifestation of Social Darwinism, extreme nationalism, and total war mentalities."],
+            ["Appeasement", "Diplomacy", "Policy of making concessions to dictatorial powers (Hitler) to avoid conflict.", "Shows the failure of the League of Nations and the reluctance of democracies to start another war."]
         ],
         "8": [
-            {t:"Cold War", h:"Freeze"}, {t:"Containment", h:"Stop"}, {t:"Truman Doctrine", h:"Money"}, 
-            {t:"Marshall Plan", h:"Rebuild"}, {t:"NATO", h:"North"}, {t:"Warsaw Pact", h:"East"}, 
-            {t:"Proxy War", h:"Substitute"}, {t:"Korean War", h:"Parallel"}, {t:"Vietnam War", h:"Domino"}, 
-            {t:"Cuban Missile Crisis", h:"Thirteen"}, {t:"Non-Aligned Movement", h:"Neutral"}, {t:"Decolonization", h:"Freedom"}, 
-            {t:"Partition of India", h:"Borders"}, {t:"Nelson Mandela", h:"Robben"}, {t:"Apartheid", h:"Segregation"}, 
-            {t:"Ho Chi Minh", h:"Uncle"}, {t:"Kwame Nkrumah", h:"Ghana"}, {t:"Mao Zedong", h:"Chairman"}, 
-            {t:"Great Leap Forward", h:"Steel"}, {t:"Cultural Revolution", h:"Red"}, {t:"Deng Xiaoping", h:"Cats"}, 
-            {t:"Mikhail Gorbachev", h:"Glasnost"}, {t:"Zionism", h:"Homeland"}
+            ["Cold War", "Tension", "Decades-long geopolitical rivalry between the capitalist US and communist USSR.", "Dominated global politics (1945-1991) without direct military conflict between the two superpowers."],
+            ["Containment", "Strategy", "US policy aimed at stopping the spread of communism worldwide.", "The rationale behind US involvement in proxy wars like Korea and Vietnam."],
+            ["Proxy War", "Battleground", "A war instigated by major powers who do not directly participate themselves.", "How the Cold War turned 'hot' in the post-colonial developing world (e.g., Vietnam, Angola)."],
+            ["Decolonization", "Autonomy", "The process of colonies gaining independence after WWII.", "Achieved through both negotiated settlements (India) and violent armed struggles (Algeria, Vietnam)."],
+            ["Partition of India", "Separation", "The 1947 division of British India into Hindu-majority India and Muslim-majority Pakistan.", "Resulted in horrific sectarian violence and massive refugee migrations."],
+            ["Apartheid", "System", "Strict system of institutionalized racial segregation in South Africa.", "Shows how white minority settler populations resisted decolonization and civil rights."],
+            ["Mao Zedong", "Figurehead", "Communist leader who established the People's Republic of China in 1949.", "Adapted Marxism to focus on the peasant class rather than industrial workers."],
+            ["Great Leap Forward", "Disaster", "Mao's catastrophic plan to rapidly industrialize and collectivize Chinese agriculture.", "Example of how communist centralized planning often led to massive famines and millions of deaths."],
+            ["Mikhail Gorbachev", "Restructuring", "The final Soviet leader whose reforms (Glasnost/Perestroika) inadvertently ended the USSR.", "His policies allowed political dissent, leading to the collapse of the Iron Curtain and the end of the Cold War."]
         ],
         "9": [
-            {t:"Globalization", h:"Shrinking"}, {t:"Green Revolution", h:"Yields"}, {t:"Medical Innovations", h:"Penicillin"}, 
-            {t:"Vaccines", h:"Polio"}, {t:"Pandemics", h:"Flu"}, {t:"Climate Change", h:"Carbon"}, 
-            {t:"Kyoto Protocol", h:"Treaty"}, {t:"Knowledge Economy", h:"Data"}, {t:"Multinational Corporations", h:"Brands"}, 
-            {t:"World Trade Organization", h:"Rules"}, {t:"NAFTA", h:"Blocs"}, {t:"Consumer Culture", h:"Buy"}, 
-            {t:"United Nations", h:"Peacekeepers"}, {t:"Declaration of Human Rights", h:"Eleanor"}, {t:"Liberation Theology", h:"Priests"}, 
-            {t:"Civil Rights Movement", h:"March"}, {t:"Greenpeace", h:"Environment"}, {t:"World Health Organization", h:"Agency"}, 
-            {t:"Artificial Intelligence", h:"Turing"}, {t:"Social Media", h:"Scroll"}, {t:"Space Race", h:"Orbit"}, 
-            {t:"Arab Spring", h:"Tweets"}
+            ["Globalization", "Integration", "The increasing interconnectedness of global economies, cultures, and populations.", "Driven by late 20th-century advancements in communication (internet) and transportation."],
+            ["Green Revolution", "Engineering", "Mid-20th century development of high-yield, disease-resistant crops and fertilizers.", "Averted global famine and allowed population to boom, but caused ecological damage and inequality."],
+            ["Climate Change", "Crisis", "Long-term shifts in temperatures and weather patterns driven by greenhouse gas emissions.", "The primary environmental consequence of globalized industrial capitalism."],
+            ["Knowledge Economy", "Specialization", "An economy focused on information, technology, and services rather than manufacturing.", "Shows the economic shift in developed nations (US, Japan) while manufacturing moved to the developing world."],
+            ["Multinational Corporations", "Enterprises", "Massive companies that operate in multiple countries (e.g., Nestle, Apple).", "Evidence of free-market economics transcending national borders and challenging state sovereignty."],
+            ["United Nations", "Forum", "International organization founded in 1945 to promote peace and cooperation.", "Created to prevent the failures of the League of Nations and establish universal standards for human rights."]
         ]
     };
 
-    let g = { players: [], alive: [], term: null, currentIdx: 0, lastEjected: null, round: 1, totalImps: 0, usedInSession: [] };
+    let g = { 
+        players: [], alive: [], unviewed: [], term: null, currentIdx: 0, 
+        lastEjected: null, round: 1, totalImps: 0, hasJester: false, hasTraitor: false, 
+        usedInSession: [], hintsEnabled: true,
+        timerDuration: 0, timerInterval: null, timeRemaining: 0
+    };
 
-    function addField(name = "") {
+    document.addEventListener("DOMContentLoaded", () => {
+        const saved = JSON.parse(localStorage.getItem('heimlerNames')) || [];
+        if(saved.length >= 3) {
+            saved.forEach(n => addField(n, false));
+        } else {
+            for(let i=0; i<4; i++) addField('', false);
+        }
+    });
+
+    function addField(name = "", autoFocus = false) {
         const div = document.createElement('div');
         div.className = 'player-row';
         div.innerHTML = `
             <input type="text" class="p-in" placeholder="Agent Name" value="${name}">
             <button class="btn-del" onclick="this.parentElement.remove()">×</button>
         `;
-        document.getElementById('setup-fields').appendChild(div);
+        const container = document.getElementById('setup-fields');
+        container.appendChild(div);
+        
+        if (autoFocus) {
+            const input = div.querySelector('.p-in');
+            if (input) {
+                input.focus();
+                container.scrollTop = container.scrollHeight;
+            }
+        }
     }
-    
-    // Default 4 players
-    for(let i=0; i<4; i++) addField();
 
     function initGame() {
-        const names = Array.from(document.querySelectorAll('.p-in')).map(i => i.value.trim().toUpperCase()).filter(n => n);
-        if(names.length < 3) return alert("Requires at least 3 agents to play.");
+        const nameInputs = Array.from(document.querySelectorAll('.p-in')).map(i => i.value.trim().toUpperCase()).filter(n => n);
+        if(nameInputs.length < 3) return alert("Requires at least 3 agents to play.");
+
+        localStorage.setItem('heimlerNames', JSON.stringify(nameInputs));
 
         const min = parseInt(document.getElementById('imp-min').value);
         const max = parseInt(document.getElementById('imp-max').value);
+        g.hintsEnabled = document.getElementById('hints-toggle').checked;
+        const jesterEnabled = document.getElementById('jester-toggle').checked;
+        const traitorEnabled = document.getElementById('traitor-toggle').checked;
         
-        if (min > max || min >= names.length) {
-            return alert("Invalid Mole parameters. Check your min/max settings.");
+        g.timerDuration = parseInt(document.getElementById('timer-select').value);
+
+        g.hasJester = jesterEnabled && nameInputs.length >= 4;
+        g.hasTraitor = traitorEnabled && nameInputs.length >= 5;
+
+        let specialRolesCount = (g.hasJester ? 1 : 0) + (g.hasTraitor ? 1 : 0);
+
+        if (min > max || min >= nameInputs.length - specialRolesCount) {
+            return alert("Invalid Mole parameters. Adjust your min/max or disable special roles for this player count.");
         }
 
-        g.totalImps = Math.min(Math.floor(Math.random() * (max - min + 1)) + min, names.length - 1);
+        g.totalImps = Math.min(Math.floor(Math.random() * (max - min + 1)) + min, nameInputs.length - specialRolesCount - 1);
 
         const unit = document.getElementById('unit-select').value;
-        const pool = (unit === 'all' ? Object.values(CED_DB).flat() : CED_DB[unit]).filter(item => !g.usedInSession.includes(item.t));
+        let pool = [];
+        if(unit === 'all') {
+            for(let key in rawDB) pool = pool.concat(rawDB[key]);
+        } else {
+            pool = rawDB[unit] || [];
+        }
+
+        pool = pool.map(item => ({ t: item[0], h: item[1], d: item[2], a: item[3] }));
+        const availableTerms = pool.filter(item => !g.usedInSession.includes(item.t));
         
-        if(pool.length === 0) {
-            alert("All terms in this unit exhausted! Resetting the term memory bank.");
+        if(availableTerms.length === 0) {
+            alert("All terms in this sector exhausted! Resetting the memory bank.");
             g.usedInSession = [];
             return initGame();
         }
 
-        g.term = pool[Math.floor(Math.random() * pool.length)];
+        g.term = availableTerms[Math.floor(Math.random() * availableTerms.length)];
         g.usedInSession.push(g.term.t);
 
-        g.players = names.map(n => ({ name: n, role: 'Civilian' }));
-        g.alive = [...Array(names.length).keys()];
+        g.players = nameInputs.map(n => ({ name: n, role: 'Civilian' }));
+        g.alive = [...Array(nameInputs.length).keys()];
+        g.unviewed = [...Array(nameInputs.length).keys()];
         g.round = 1;
         
-        let assigned = 0;
-        while(assigned < g.totalImps) {
-            let r = Math.floor(Math.random() * names.length);
-            if(g.players[r].role !== 'Mole') {
-                g.players[r].role = 'Mole';
-                assigned++;
-            }
+        let availableIndices = [...g.alive];
+
+        if(g.hasJester) {
+            const jIdx = Math.floor(Math.random() * availableIndices.length);
+            g.players[availableIndices[jIdx]].role = 'Jester';
+            availableIndices.splice(jIdx, 1);
         }
-        g.currentIdx = 0; 
-        showPass();
+
+        if(g.hasTraitor) {
+            const tIdx = Math.floor(Math.random() * availableIndices.length);
+            g.players[availableIndices[tIdx]].role = 'Traitor';
+            availableIndices.splice(tIdx, 1);
+        }
+
+        let assignedMoles = 0;
+        while(assignedMoles < g.totalImps && availableIndices.length > 0) {
+            const mIdx = Math.floor(Math.random() * availableIndices.length);
+            g.players[availableIndices[mIdx]].role = 'Mole';
+            availableIndices.splice(mIdx, 1);
+            assignedMoles++;
+        }
+        
+        showHub();
     }
 
-    function showPass() {
-        showScreen('pass');
-        document.getElementById('pass-name').innerText = g.players[g.currentIdx].name;
+    function showHub() {
+        clearTimer();
+        showScreen('hub');
+        const list = document.getElementById('hub-list');
+        list.innerHTML = '';
+        
+        g.alive.forEach((idx, i) => {
+            const isUnviewed = g.unviewed.includes(idx);
+            const b = document.createElement('div');
+            b.className = `agent-btn ${isUnviewed ? '' : 'viewed'}`;
+            b.style.animationDelay = `${i * 0.08}s`;
+            
+            b.innerHTML = `<span>${g.players[idx].name}</span> <span class="agent-icon">${isUnviewed ? '🔒' : '✅'}</span>`;
+            
+            if(isUnviewed) {
+                b.onclick = () => viewIntel(idx);
+            }
+            list.appendChild(b);
+        });
+
+        const startBtn = document.getElementById('btn-start-debate');
+        startBtn.style.display = g.unviewed.length === 0 ? 'block' : 'none';
     }
 
-    function revealRole() {
+    function viewIntel(idx) {
+        g.currentIdx = idx;
+        g.unviewed = g.unviewed.filter(i => i !== idx);
+        
         showScreen('secret');
         const box = document.getElementById('role-card');
+        
+        box.style.animation = 'none';
+        box.offsetHeight; 
+        box.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+
         const p = g.players[g.currentIdx];
+        
         if(p.role === 'Mole') {
+            const hintHtml = g.hintsEnabled 
+                ? `<p class="subtitle" style="margin-top: 10px;">Intercepted Theme</p><h1 style="font-size:2.8rem; margin: 10px 0;">${g.term.h}</h1>`
+                : `<h1 style="font-size:1.8rem; margin: 20px 0; color: var(--text-muted);">No Hints Enabled</h1>`;
+
             box.innerHTML = `
                 <h2 style="color:var(--red); font-weight: 800; margin:0;">THE MOLE</h2>
-                <p class="subtitle" style="margin-top: 10px;">Intercepted Hint</p>
-                <h1 style="font-size:2.8rem; margin: 10px 0;">${g.term.h}</h1>
+                ${hintHtml}
                 <p style="color: var(--text-muted); font-size: 0.85rem;">Blend in. Fake it.</p>
+            `;
+        } else if (p.role === 'Jester') {
+            box.innerHTML = `
+                <h2 style="color:var(--purple); font-weight: 900; margin:0; text-shadow: 0 0 10px rgba(191,90,242,0.5);">THE JESTER</h2>
+                <p class="subtitle" style="margin-top: 10px; color: #da8fff;">Target Concept</p>
+                <h1 style="font-size:2.2rem; margin: 10px 0;">${g.term.t}</h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">You know the word. Frame yourself as the Mole. If they vote you out, YOU WIN.</p>
+            `;
+        } else if (p.role === 'Traitor') {
+            box.innerHTML = `
+                <h2 style="color:var(--orange); font-weight: 900; margin:0; text-shadow: 0 0 10px rgba(255,159,10,0.5);">THE TRAITOR</h2>
+                <p class="subtitle" style="margin-top: 10px; color: #ffd60a;">Target Concept</p>
+                <h1 style="font-size:2.2rem; margin: 10px 0;">${g.term.t}</h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">You know the word. Find the Mole and protect them. You win if they survive.</p>
             `;
         } else {
             box.innerHTML = `
                 <h2 style="color:var(--green); font-weight: 800; margin:0;">HISTORIAN</h2>
                 <p class="subtitle" style="margin-top: 10px;">Target Concept</p>
                 <h1 style="font-size:2.2rem; margin: 10px 0;">${g.term.t}</h1>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">Describe it safely.</p>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Describe it safely without using the name.</p>
             `;
         }
     }
 
-    function nextSecret() {
-        g.currentIdx++;
-        if(g.currentIdx < g.players.length) {
-            showPass();
-        } else { 
-            // Random Start Mechanic
-            g.currentIdx = Math.floor(Math.random() * g.alive.length);
-            showScreen('debate'); 
-            updateDebate(); 
-        }
+    function backToHub() {
+        showHub();
+    }
+
+    function startDebate() {
+        g.currentIdx = Math.floor(Math.random() * g.alive.length);
+        showScreen('debate'); 
+        updateDebate(); 
     }
 
     function updateDebate() {
         const pIdx = g.alive[g.currentIdx % g.alive.length];
         document.getElementById('speaker-name').innerText = g.players[pIdx].name;
         document.getElementById('round-tag').innerText = `ROUND ${g.round}`;
+        startTimer();
     }
 
     function nextSpeaker() {
@@ -425,7 +656,68 @@
         updateDebate();
     }
 
+    /* --- Timer Logic --- */
+    function startTimer() {
+        clearTimer();
+        const container = document.getElementById('timer-bar-container');
+        
+        if (g.timerDuration === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+        g.timeRemaining = g.timerDuration;
+        updateTimerVisuals(true);
+        
+        g.timerInterval = setInterval(() => {
+            g.timeRemaining--;
+            updateTimerVisuals(false);
+            if (g.timeRemaining <= 0) {
+                clearTimer();
+            }
+        }, 1000);
+    }
+
+    function resumeTimer() {
+        // Just unpauses visual if they cancel vote
+        if (g.timerDuration > 0 && g.timeRemaining > 0) {
+            g.timerInterval = setInterval(() => {
+                g.timeRemaining--;
+                updateTimerVisuals(false);
+                if (g.timeRemaining <= 0) clearTimer();
+            }, 1000);
+        }
+    }
+
+    function updateTimerVisuals(instant) {
+        const bar = document.getElementById('timer-bar');
+        const pct = (g.timeRemaining / g.timerDuration) * 100;
+        
+        if(instant) {
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            bar.style.background = 'var(--green)';
+            setTimeout(() => {
+                bar.style.transition = 'width 1s linear, background-color 0.5s ease';
+            }, 50);
+        } else {
+            bar.style.width = Math.max(pct, 0) + '%';
+        }
+        
+        if (pct > 50) bar.style.background = 'var(--green)';
+        else if (pct > 20) bar.style.background = 'var(--orange)';
+        else bar.style.background = 'var(--red)';
+    }
+
+    function clearTimer() {
+        if(g.timerInterval) clearInterval(g.timerInterval);
+    }
+
+    /* --- End Timer Logic --- */
+
     function showVoting() {
+        clearTimer();
         showScreen('voting');
         const list = document.getElementById('vote-list');
         list.innerHTML = '';
@@ -442,23 +734,45 @@
         showScreen('result');
         const p = g.players[idx];
         document.getElementById('res-name').innerText = p.name;
-        const status = document.getElementById('res-status');
         
+        const status = document.getElementById('res-status');
+        const desc = document.getElementById('res-desc');
+        const defBox = document.getElementById('res-def');
         const btnKeepGoing = document.getElementById('btn-keep-going');
         const btnNextRound = document.getElementById('btn-next-round');
 
-        if(p.role === 'Mole') {
-            status.innerText = "WAS THE MOLE";
-            status.style.color = "var(--red)";
-            document.getElementById('res-desc').innerText = `Threat neutralized. The historical concept was: ${g.term.t}`;
-            
+        document.getElementById('def-text').innerText = g.term.d;
+        document.getElementById('app-text').innerText = g.term.a;
+
+        if(p.role === 'Jester') {
+            status.innerText = "WAS THE JESTER";
+            status.style.color = "var(--purple)";
+            desc.innerText = `You fell for the trap! THE JESTER WINS. The concept was: ${g.term.t}`;
+            defBox.style.display = 'block';
             btnKeepGoing.style.display = 'none';
             btnNextRound.style.display = 'block';
+
+        } else if(p.role === 'Traitor') {
+            status.innerText = "WAS THE TRAITOR";
+            status.style.color = "var(--orange)";
+            desc.innerText = `A double agent was ejected. The Mole remains active. Keep debating!`;
+            defBox.style.display = 'none';
+            btnKeepGoing.style.display = 'block';
+            btnNextRound.style.display = 'none';
+
+        } else if(p.role === 'Mole') {
+            status.innerText = "WAS THE MOLE";
+            status.style.color = "var(--red)";
+            desc.innerText = `Threat neutralized. The concept was: ${g.term.t}`;
+            defBox.style.display = 'block';
+            btnKeepGoing.style.display = 'none';
+            btnNextRound.style.display = 'block';
+
         } else {
             status.innerText = "WAS INNOCENT";
             status.style.color = "var(--green)";
-            document.getElementById('res-desc').innerText = `A true historian was ejected. The Mole remains active.`;
-            
+            desc.innerText = `A true historian was ejected. The Mole remains active. Keep debating!`;
+            defBox.style.display = 'none';
             btnKeepGoing.style.display = 'block';
             btnNextRound.style.display = 'none';
         }
@@ -480,10 +794,13 @@
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        setTimeout(() => {
+            document.getElementById(id).classList.add('active');
+        }, 10);
     }
 
     function reset() {
+        clearTimer();
         showScreen('setup');
     }
 </script>
